@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Library System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>📚 Library Book Manager</h1>
+
+<div class="form-container">
+  <input type="number" id="book_id" placeholder="Book ID">
+  <input type="text" id="title" placeholder="Title">
+  <input type="text" id="author" placeholder="Author">
+  <input type="number" id="year" placeholder="Year">
+  <button onclick="addBook()">Add Book</button>
+</div>
+
+<h2>Available Books</h2>
+<div id="bookList"></div>
+
+<script>
+async function addBook() {
+  const book = {
+    book_id: document.getElementById("book_id").value,
+    title: document.getElementById("title").value,
+    author: document.getElementById("author").value,
+    year: document.getElementById("year").value
+  };
+
+  await fetch("/add-book", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(book)
+  });
+
+  loadBooks();
+}
+
+async function loadBooks() {
+  const res = await fetch("/books");
+  const data = await res.json();
+
+  let output = "";
+  data.forEach(book => {
+    output += `
+      <div class="card">
+        <h3>${book.title}</h3>
+        <p><b>ID:</b> ${book.book_id}</p>
+        <p><b>Author:</b> ${book.author}</p>
+        <p><b>Year:</b> ${book.year}</p>
+      </div>
+    `;
+  });
+
+  document.getElementById("bookList").innerHTML = output;
+}
+
+// Load on start
+loadBooks();
+</script>
+
+</body>
+</html>
